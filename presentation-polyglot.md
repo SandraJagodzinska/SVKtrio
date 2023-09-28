@@ -37,10 +37,29 @@
 
 ## Installation de l'outil :
 
+### À partir de PyPI :
+
 - MacOS
   > `pip install polyglot `
 - Unix
+
   > `sudo apt install polyglot`
+
+- Les erreurs (macOs)
+
+  > ModuleNotFoundError: No module named `icu`
+
+  - `pip install pyicu`
+
+  - `brew install icu4c`
+
+- Solution : Utiliser googleColab
+
+- Sinon :
+
+### Installer de la source : (polyglot est developpé sur Github)
+
+Cloner le git `git clone https://github.com/aboSamoor/polyglot` et installer `python setup.py install`
 
 ## Démontration :
 

@@ -1,0 +1,10 @@
+# OS generated files #
+**/.DS_Store
+.DS_Store
+
+
+# Files / Data #
+__pycache__
+**/corpus_polonais
+**/config
+**/spacy_model2

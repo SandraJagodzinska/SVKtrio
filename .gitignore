@@ -4,7 +4,7 @@
 
 
 # Files / Data #
-__pycache__
-**/corpus_polonais
-**/config
-**/spacy_model2
+**/autres-travaux
+./projet-eval/corpus_pl
+./projet-eval/config-pl
+./projet-eval/spacy_model2/

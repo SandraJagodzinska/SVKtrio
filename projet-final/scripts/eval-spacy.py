@@ -6,7 +6,7 @@ from spacy import Language as SpacyPipeline
 from spacy.tokens import Token as SpacyToken, Doc as SpacyDoc
 import spacy
 
-#from pyJoules.energy_meter import measure_energy
+from pyJoules.energy_meter import measure_energy
 
 from sklearn.metrics import classification_report
 
@@ -29,29 +29,31 @@ class Corpus:
 
 
 def read_conll(path: Path, vocabulaire: Optional[Set[str]] = None) -> Corpus:
-    sentences: List[Sentence] = []
-    tokens: List[Token] = []
-    sid = ""
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("# sent_id =" ):
-                sid = line.split(" ")[-1]
-            if not line.startswith("#"):
-                if line == "":
-                    sentences.append(Sentence(sent_id=sid, tokens=tokens))
-                    tokens = []
-                else:
-                    fields = line.split("\t")
-                    #print(fields)
-                    form, tag = fields[1], fields[3]
-                    if not "-" in fields[0]:  # éviter les contractions type "du"
-                        if vocabulaire is None:
-                            is_oov = True
-                        else:
-                            is_oov = not form in vocabulaire
-                        tokens.append(Token(form, tag, is_oov))
-    return Corpus(sentences)
+	lst_cat = []
+	sentences: List[Sentence] = []
+	tokens: List[Token] = []
+	sid = ""
+	with open(path) as f:
+		for line in f:
+			line = line.strip()
+			if line.startswith("# genre =" ):
+				sid = line.split(" ")[-1]
+				if sid not in lst_cat : 
+					lst_cat.append(sid)
+			if not line.startswith("#"):
+				if line == "":
+					sentences.append(Sentence(sent_id=sid, tokens=tokens))
+					tokens = []
+				else:
+					fields = line.split("\t")
+					form, tag = fields[1], fields[3]
+					if not "-" in fields[0]:  # éviter les contractions type "du"
+						if vocabulaire is None:
+							is_oov = True
+						else:
+							is_oov = not form in vocabulaire
+						tokens.append(Token(form, tag, is_oov))
+	return lst_cat, Corpus(sentences)
 
 
 def build_vocabulaire(corpus: Corpus) -> Set[str]:
@@ -72,7 +74,7 @@ def doc_to_sentence(doc: SpacyDoc, origin: Sentence) -> Sentence:
         tokens.append(Token(tok.text, tag, is_oov=origin_token.is_oov))
     return Sentence(origin.sent_id, tokens)
 
-#@measure_energy
+# @measure_energy
 def tag_corpus_spacy(corpus: Corpus, model_spacy: SpacyPipeline) -> Corpus:
     sentences = []
     for sentence in corpus.sentences:
@@ -109,16 +111,17 @@ def print_report(corpus_gold: Corpus, corpus_test: Corpus):
     print(classification_report(ref, test))
 
 def main():
-    corpus_train = read_conll("./corpus_polonais/corpus-lfg/pl_lfg-ud-train.conllu")
+    lst_cat_train, corpus_train = read_conll("pl_lfg-ud-train.conllu")
     vocab_train = build_vocabulaire(corpus_train)
-    for model_name in ("./model-pl/spacy_model2/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
+    for model_name in ("spacy_model_pl/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
         print(model_name)
         model_spacy = spacy.load(model_name)
-        corpus_gold = read_conll("./corpus_polonais/corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
+        lst_cat_gold, corpus_gold = read_conll("pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
         corpus_test = tag_corpus_spacy(corpus_gold, model_spacy)
-        #for subcorpus in ("annodis", "frwiki", "emea", "Europar"):
-        #    print(subcorpus)
-            #print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
+        print(compute_accuracy(corpus_gold, corpus_test))
+        for subcorpus in lst_cat_gold:
+            print(subcorpus)
+            print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
         print_report(corpus_gold, corpus_test)
 
 

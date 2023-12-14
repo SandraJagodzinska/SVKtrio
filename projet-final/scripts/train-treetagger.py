@@ -45,8 +45,8 @@ with open("../train-treetagger/tags.txt", "w", encoding="utf-8") as f:
     f.write(" ".join(tags))
 
 def conlluToAnnotated(conllufile, outputfile) : 
-    with open(conllufile, "r") as cf, open(outputfile, "w") as of : 
-        for line in cf : 
+    with open(outputfile, "w") as of : 
+        for line in conllufile : 
             if line != "" and line != "\n":
                 if not line.startswith("#") : 
                     token = line.split("\t")[1]

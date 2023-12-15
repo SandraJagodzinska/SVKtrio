@@ -18,6 +18,7 @@ def readConll(path):
 def conlluToLexicon(conllufile, output_path):
     """
     Prend un fichier conllu et donne un lexique dans un fichier tsv
+    le lexicon a la forme : tokenX POSTokenX1 lemmaTokenX1 POSTokenX2 lemmaTokenX2
     """
     lexicon = {} # stocker le lexique dans un dictionnaire
     # parcourir le fichier conllu
@@ -27,8 +28,9 @@ def conlluToLexicon(conllufile, output_path):
             line = line.split("\t")
             if len(line) >= 4:  # verifie qu'on aura les éléments nécessaires selon les colonnes de conllu
                 token = line[1]
+                lemma = line[2]
                 pos = line[3]
-                entry = (token, pos) # tuple pour chaque entrée
+                entry = (pos, tuple) # lemma pour chaque entrée
                 # ajouter une seule occurence de tuple au lexique si elle n'y est pas déjà
                 if token in lexicon:
                     lexicon[token].add(entry)
@@ -37,7 +39,8 @@ def conlluToLexicon(conllufile, output_path):
     # écrire le lexique en sortie dans un fichier tsv
     with open(output_path, 'w', encoding='utf-8', newline='') as tsvfile:
         for token, entries in lexicon.items():
-            # pour chaque token écrire ses POS tags, un token peut avoir plusieurs POS tags dans une même ligne
+            # pour chaque token écrire ses POS tags et lemmes, un token peut avoir plusieurs entrées dans une même ligne
+            tsvfile.write(f"{token}\t")
             for entry in entries:
                 tsvfile.write(f"{entry[0]}\t{entry[1]}\t")
             tsvfile.write('\n') # sauter une ligne entre chaque entrée

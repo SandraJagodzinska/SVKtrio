@@ -30,19 +30,23 @@ def conlluToLexicon(conllufile, output_path):
                 token = line[1]
                 lemma = line[2]
                 pos = line[3]
-                entry = (pos, lemma) # tuple pour chaque entrée
-                # ajouter une seule occurence de tuple au lexique si elle n'y est pas déjà
-                if token in lexicon:
-                    lexicon[token].add(entry)
+                entry = {pos : lemma} # liste pour chaque entrée
+                # ajouter une seule occurence de liste au lexique si elle n'y est pas déjà
+                if token not in lexicon:
+                    lexicon[token] = entry
                 else:
-                    lexicon[token] = {entry}
+                    if pos not in lexicon[token] : 
+                        lexicon[token][pos] = lemma
+    print(lexicon["Stanisława"])
+    print(lexicon["wczoraj"])
+    print(lexicon["temu"])
     # écrire le lexique en sortie dans un fichier tsv
     with open(output_path, 'w', encoding='utf-8', newline='') as tsvfile:
         for token, entries in lexicon.items():
             # pour chaque token écrire ses POS tags et lemmes, un token peut avoir plusieurs entrées dans une même ligne
-            tsvfile.write(f"{token}\t")
-            for entry in entries:
-                tsvfile.write(f"{entry[0]}\t{entry[1]}\t")
+            tsvfile.write(f"{token}")
+            for pos, lemma in entries.items():
+                tsvfile.write(f"\t{pos}\t{lemma}")
             tsvfile.write('\n') # sauter une ligne entre chaque entrée
 
 # Tester

@@ -44,9 +44,17 @@ def conlluToLexicon(conllufile, output_path):
     with open(output_path, 'w', encoding='utf-8', newline='') as tsvfile:
         for token, entries in lexicon.items():
             # pour chaque token écrire ses POS tags et lemmes, un token peut avoir plusieurs entrées dans une même ligne
-            tsvfile.write(f"{token}")
-            for pos, lemma in entries.items():
-                tsvfile.write(f"\t{pos}\t{lemma}")
+            tsvfile.write(f"{token}\t")
+            if len(entries) > 1 :
+            	for i in range(len(entries)-1):
+            		lst = list(entries.items())
+            		pos, lemma = lst[i]
+            		tsvfile.write(f"{pos} {lemma} ")
+            	pos, lemma = lst[-1]
+            	tsvfile.write(f"{pos} {lemma}")
+            else : 
+            	pos, lemma = list(entries.items())[0]
+            	tsvfile.write(f"{pos} {lemma}")
             tsvfile.write('\n') # sauter une ligne entre chaque entrée
 
 # Tester
@@ -94,7 +102,7 @@ def conlluToAnnotated(conllufile, outputfile) :
 if __name__ == "__main__" : 
 	fichier_conllu = readConll("../corpus-lfg/pl_lfg-ud-train.conllu")
 	tags = conlluToTag(fichier_conllu)
-	print(conlluToLexicon(fichier_conllu, "../train-treetagger/lexicon.tsv"))
+	print(conlluToLexicon(fichier_conllu, "../train-treetagger/lexicon.txt"))
 	print(conlluToAnnotated(fichier_conllu, "../train-treetagger/annotated.tsv"))
 	with open("../train-treetagger/tags.txt", "w", encoding="utf-8") as f:
 		f.write(" ".join(tags))

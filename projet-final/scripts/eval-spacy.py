@@ -33,7 +33,7 @@ def read_conll(path: Path, vocabulaire: Optional[Set[str]] = None) -> Corpus:
 	sentences: List[Sentence] = []
 	tokens: List[Token] = []
 	sid = ""
-	with open(path) as f:
+	with open(path) as f :
 		for line in f:
 			line = line.strip()
 			if line.startswith("# genre =" ):
@@ -104,6 +104,49 @@ def compute_accuracy(corpus_gold: Corpus, corpus_test: Corpus, subcorpus: Option
                         oov_ok += 1
     
     return nb_ok / nb_total, oov_ok / oov_total
+    
+def reconstituer_le_text_pour_treetagger(corpus_gold: Corpus, output_file) :
+	"""Cette fonction prend en argument un corpus gold obtenu depuis la lecture du fichier conll
+	ensuite extrait les tokens de ce corpus pour les mettre dans le fichier qui va être annoté par Treetagger"""
+	with open(output_file, "w") as f : 
+		for sentence_gold in corpus_gold.sentences:
+			for token_gold in sentence_gold.tokens:
+				f.write(f"{token_gold.form}\n")
+
+def annotation_treetagger_to_corpus(corpus: Corpus, annotation_file) :
+	"""c'est une fonction qui prend en argument le corpus gold constitue à partir de conllu et remplace les étiquettes
+	associés par le treetagger à chaque token et renvoie un nouveau corpus étiquetté"""
+	sentences = []
+	tokens = []
+	i = 0
+	lst_annotated = get_annotation(annotation_file)
+	for sentence in corpus.sentences:
+		for token_origin in sentence.tokens:
+			token_tag_annotated = lst_annotated[i]
+			form_annotated, tag_annotated = token_tag_annotated[0], token_tag_annotated[1]
+			#print(token_origin.form, "-->", token_origin.tag, "////", form_annotated, "-->", tag_annotated)
+			i+=1
+			tokens.append(Token(token_origin.form, tag_annotated, is_oov=token_origin.is_oov))
+		sentence_form = Sentence(sentence.sent_id, tokens)
+		sentences.append(sentence_form)
+		tokens = []
+	return Corpus(sentences)
+			
+
+
+def get_annotation(annotation_file):
+	"""C'est une fonction qui prend en entrée un fichier avec annotation de TreeTagger - un token tag par ligne, 
+	et le rassemble dans une liste de tuples (token, tag)"""
+	lst_tuples = []
+	with open(annotation_file, "r") as annotation : 
+		for line in annotation : 
+			line = line.strip()
+			token, tag = line.split("\t")[0], line.split("\t")[1]
+			pair = (token,tag)
+			lst_tuples.append(pair)
+	return lst_tuples
+			
+		 
 
 def print_report(corpus_gold: Corpus, corpus_test: Corpus):
     ref = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
@@ -111,18 +154,27 @@ def print_report(corpus_gold: Corpus, corpus_test: Corpus):
     print(classification_report(ref, test))
 
 def main():
-    lst_cat_train, corpus_train = read_conll("pl_lfg-ud-train.conllu")
+    lst_cat_train, corpus_train = read_conll("../corpus-lfg/pl_lfg-ud-train.conllu")
     vocab_train = build_vocabulaire(corpus_train)
-    for model_name in ("spacy_model_pl/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
+    lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
+    for model_name in ("../train-spacy/spacy_model2/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
         print(model_name)
         model_spacy = spacy.load(model_name)
-        lst_cat_gold, corpus_gold = read_conll("pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
+        lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
         corpus_test = tag_corpus_spacy(corpus_gold, model_spacy)
+        print(model_name)
         print(compute_accuracy(corpus_gold, corpus_test))
         for subcorpus in lst_cat_gold:
             print(subcorpus)
             print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
         print_report(corpus_gold, corpus_test)
+    reconstituer_le_text_pour_treetagger(corpus_gold, "../text4TT.txt")
+    corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger.txt")
+    print("TREE-TAGGER RESULTS")
+    for subcorpus in lst_cat_gold:
+        print(subcorpus)
+        print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
+    print_report(corpus_gold, corpus_test_treeTagger)
 
 
 if __name__ == "__main__":

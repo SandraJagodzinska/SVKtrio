@@ -208,7 +208,7 @@ def print_report(corpus_gold: Corpus, corpus_test: Corpus):
     test = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
     print(classification_report(ref, test))
 
-def matrix(corpus_gold: Corpus, corpus_test: Corpus):
+def matrix(corpus_gold: Corpus, corpus_test: Corpus, model_name):
     ref = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
     test = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
     labels = sorted(set(ref + test))  
@@ -216,7 +216,9 @@ def matrix(corpus_gold: Corpus, corpus_test: Corpus):
     
     # Plot the confusion matrix
     cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
-    cm_display.plot(cmap=plt.cm.PuRd, values_format=".2f") 
+    #cm_display.plot(cmap=plt.cm.PuRd, values_format=".2f") cette comande montre chiffres avec deux decimal places, on a pas besoin de ça car on compte les nombres de token avec une étiquette donc chiffres d'entiers
+    cm_display.plot(cmap=plt.cm.PuRd, values_format=".0f")
+    plt.title(model_name)
     plt.show()  # Display the plot
 
     return cm_display
@@ -225,32 +227,35 @@ def main():
     lst_cat_train, corpus_train = read_conll("../corpus-lfg/pl_lfg-ud-train.conllu")
     vocab_train = build_vocabulaire(corpus_train)
     lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
-    # for model_name in ("../train-spacy/spacy_model2/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
-#         print(model_name)
-#         model_spacy = spacy.load(model_name)
-#         lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
-#         corpus_test = tag_corpus_spacy(corpus_gold, model_spacy)
-#         print(model_name)
-#         print(compute_accuracy(corpus_gold, corpus_test))
-#         for subcorpus in lst_cat_gold:
-#             print(subcorpus)
-#             print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
-#         print_report(corpus_gold, corpus_test)
+    for model_name in ("../train-spacy/spacy_model2/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
+        model_spacy = spacy.load(model_name)
+        lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
+        corpus_test = tag_corpus_spacy(corpus_gold, model_spacy)
+        model_name = model_name.split("/")[-1]
+        print(model_name)
+        print(compute_accuracy(corpus_gold, corpus_test))
+        for subcorpus in lst_cat_gold:
+            print(subcorpus)
+            print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
+        print_report(corpus_gold, corpus_test)
+        matrix(corpus_gold, corpus_test, model_name)
     reconstituer_le_text_pour_treetagger(corpus_gold, "../text4TT.txt")
     corpus_test_treeTagger_notre = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger.txt", False)
     corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger_original.txt", True)
+    print("TREE-TAGGER RESULTS ORIGINAL")
+    model_name = "Tree-Tagger-polonais"
+    for subcorpus in lst_cat_gold:
+        print(subcorpus)
+        print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
+    print_report(corpus_gold, corpus_test_treeTagger
+    
     print("TREE-TAGGER RESULTS ENTRAINE")
+    model_name = "Tree-Tagger-polonais-entrainé"
     for subcorpus in lst_cat_gold:
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger_notre, subcorpus))
     print_report(corpus_gold, corpus_test_treeTagger_notre)
-    print("TREE-TAGGER RESULTS ORIGINAL")
-    for subcorpus in lst_cat_gold:
-        print(subcorpus)
-        print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
-    print_report(corpus_gold, corpus_test_treeTagger)
-
-    matrix(corpus_gold, corpus_test)
+)
 
 
 if __name__ == "__main__":

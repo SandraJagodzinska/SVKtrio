@@ -160,7 +160,7 @@ def matrix(corpus_gold: Corpus, corpus_test: Corpus):
     
     # Plot the confusion matrix
     cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
-    cm_display.plot(cmap=plt.cm.deeppink, values_format=".2f") 
+    cm_display.plot(cmap=plt.cm.PuRd, values_format=".2f") 
     plt.show()  # Display the plot
 
     return cm_display

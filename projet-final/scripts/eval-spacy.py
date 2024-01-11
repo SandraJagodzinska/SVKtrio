@@ -248,7 +248,6 @@ def main():
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
     print_report(corpus_gold, corpus_test_treeTagger)
-    matrix(corpus_gold, corpus_test, model_name)
     
     print("TREE-TAGGER RESULTS ENTRAINE")
     model_name = "Tree-Tagger-polonais-entrainé"
@@ -256,7 +255,6 @@ def main():
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger_notre, subcorpus))
     print_report(corpus_gold, corpus_test_treeTagger_notre)
-    matrix(corpus_gold, corpus_test, model_name)
 
 
 if __name__ == "__main__":

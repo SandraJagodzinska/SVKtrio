@@ -113,13 +113,14 @@ def reconstituer_le_text_pour_treetagger(corpus_gold: Corpus, output_file) :
 			for token_gold in sentence_gold.tokens:
 				f.write(f"{token_gold.form}\n")
 
-def annotation_treetagger_to_corpus(corpus: Corpus, annotation_file) :
+def annotation_treetagger_to_corpus(corpus: Corpus, annotation_file, tagSet_complex) :
 	"""c'est une fonction qui prend en argument le corpus gold constitue à partir de conllu et remplace les étiquettes
 	associés par le treetagger à chaque token et renvoie un nouveau corpus étiquetté"""
 	sentences = []
 	tokens = []
 	i = 0
-	lst_annotated = get_annotation(annotation_file)
+	lst_annotated = get_annotation(annotation_file, tagSet_complex)
+# 	print(lst_annotated)
 	for sentence in corpus.sentences:
 		for token_origin in sentence.tokens:
 			token_tag_annotated = lst_annotated[i]
@@ -134,17 +135,71 @@ def annotation_treetagger_to_corpus(corpus: Corpus, annotation_file) :
 			
 
 
-def get_annotation(annotation_file):
-	"""C'est une fonction qui prend en entrée un fichier avec annotation de TreeTagger - un token tag par ligne, 
+def get_annotation(annotation_file, tagSet_complexe):
+	"""C'est une fonction qui prend en entrée un fichier avec annotation de TreeTagger - un token-tag par ligne, 
 	et le rassemble dans une liste de tuples (token, tag)"""
 	lst_tuples = []
 	with open(annotation_file, "r") as annotation : 
 		for line in annotation : 
 			line = line.strip()
 			token, tag = line.split("\t")[0], line.split("\t")[1]
+			if tagSet_complexe: 
+# 				print("complexe tag", token, tag)
+				tag = dico_étiquettes_treeTagger(tag)
+# 				print("nouveau tag", tag)
 			pair = (token,tag)
 			lst_tuples.append(pair)
 	return lst_tuples
+	
+def dico_étiquettes_treeTagger(tag_complexe) : 
+	"""c'est une fonction qui prend tag d'annotation de TreeTagger pré-entrainé et renvoie une étiquette unifié avec notre tagset"""
+	étiquettes = {"subst" : "NOUN",
+					"depr" : "NOUN",
+					"num" : "NUM",
+					"numcol" : "NUM",
+					"dig" : "NUM",
+					"adj" : "ADJ",
+					"adja" : "ADJ",
+					"adjp" : "ADJ",
+					"adjc" : "ADJ",
+					"adv" : "ADV",
+					"part" : "PART",
+					"ppron12" : "PRON",
+					"ppron3" : "PRON",
+					"siebie" : "VERB",
+					"fin" : "VERB",
+					"bedzie" : "VERB",
+					"aglt" : "VERB",
+					"praet" : "VERB",
+					"impt" : "VERB",
+					"imps" : "VERB",
+					"inf" : "VERB",
+					"pcon" : "VERB",
+					"pant" : "VERB",
+					"ger" : "VERB",
+					"pact" : "VERB",
+					"ppas" : "VERB",
+					"winien" : "VERB",
+					"pred" : "VERB",
+					"prep" : "ADP",
+					"conj" : "CONJ",
+					"comp" : "CONJ",
+					"qub" : "PART",
+					"brev" : "X", #L'étiquette qui est pas traduisable
+					"burk" : "INTJ", #mais pas sur à revoir
+					"interj" : "INTJ",
+					"interp" : "PUNCT",
+					"xxx" : "X", #alien
+					"xxs" : "X", #alien
+					"xxp" : "X", #alien
+					"ign" : "X" #ignoré
+	}
+	tag_complexe = tag_complexe.split(":")[0]
+	if tag_complexe in étiquettes : 
+		tag_propre = étiquettes[tag_complexe]
+	else:
+		tag_propre = "X"
+	return tag_propre
 			
 		 
 
@@ -157,20 +212,26 @@ def main():
     lst_cat_train, corpus_train = read_conll("../corpus-lfg/pl_lfg-ud-train.conllu")
     vocab_train = build_vocabulaire(corpus_train)
     lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
-    for model_name in ("../train-spacy/spacy_model2/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
-        print(model_name)
-        model_spacy = spacy.load(model_name)
-        lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
-        corpus_test = tag_corpus_spacy(corpus_gold, model_spacy)
-        print(model_name)
-        print(compute_accuracy(corpus_gold, corpus_test))
-        for subcorpus in lst_cat_gold:
-            print(subcorpus)
-            print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
-        print_report(corpus_gold, corpus_test)
+    # for model_name in ("../train-spacy/spacy_model2/model-best", "pl_core_news_sm", "pl_core_news_md", "pl_core_news_lg"):
+#         print(model_name)
+#         model_spacy = spacy.load(model_name)
+#         lst_cat_gold, corpus_gold = read_conll("../corpus-lfg/pl_lfg-ud-test.conllu", vocabulaire=vocab_train)
+#         corpus_test = tag_corpus_spacy(corpus_gold, model_spacy)
+#         print(model_name)
+#         print(compute_accuracy(corpus_gold, corpus_test))
+#         for subcorpus in lst_cat_gold:
+#             print(subcorpus)
+#             print(compute_accuracy(corpus_gold, corpus_test, subcorpus))
+#         print_report(corpus_gold, corpus_test)
     reconstituer_le_text_pour_treetagger(corpus_gold, "../text4TT.txt")
-    corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger.txt")
-    print("TREE-TAGGER RESULTS")
+    corpus_test_treeTagger_notre = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger.txt", False)
+    corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger_original.txt", True)
+    print("TREE-TAGGER RESULTS ENTRAINE")
+    for subcorpus in lst_cat_gold:
+        print(subcorpus)
+        print(compute_accuracy(corpus_gold, corpus_test_treeTagger_notre, subcorpus))
+    print_report(corpus_gold, corpus_test_treeTagger_notre)
+    print("TREE-TAGGER RESULTS ORIGINAL")
     for subcorpus in lst_cat_gold:
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))

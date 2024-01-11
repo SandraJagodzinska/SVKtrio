@@ -240,14 +240,15 @@ def main():
         print_report(corpus_gold, corpus_test)
         matrix(corpus_gold, corpus_test, model_name)
     reconstituer_le_text_pour_treetagger(corpus_gold, "../text4TT.txt")
-    corpus_test_treeTagger_notre = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger.txt", False)
-    corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../annotation_treeTagger_original.txt", True)
+    corpus_test_treeTagger_notre = annotation_treetagger_to_corpus(corpus_gold, "../train-treetagger/annotation_treeTagger.txt", False)
+    corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../train-treetagger/annotation_treeTagger_original.txt", True)
     print("TREE-TAGGER RESULTS ORIGINAL")
     model_name = "Tree-Tagger-polonais"
     for subcorpus in lst_cat_gold:
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
-    print_report(corpus_gold, corpus_test_treeTagger
+    print_report(corpus_gold, corpus_test_treeTagger)
+    matrix(corpus_gold, corpus_test, model_name)
     
     print("TREE-TAGGER RESULTS ENTRAINE")
     model_name = "Tree-Tagger-polonais-entrainé"
@@ -255,7 +256,7 @@ def main():
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger_notre, subcorpus))
     print_report(corpus_gold, corpus_test_treeTagger_notre)
-)
+    matrix(corpus_gold, corpus_test, model_name)
 
 
 if __name__ == "__main__":

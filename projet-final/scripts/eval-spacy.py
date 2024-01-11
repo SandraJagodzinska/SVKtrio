@@ -8,7 +8,8 @@ import spacy
 
 from pyJoules.energy_meter import measure_energy
 
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay, confusion_matrix
+from matplotlib import pyplot as plt
 
 @dataclass
 class Token:
@@ -201,12 +202,24 @@ def dico_étiquettes_treeTagger(tag_complexe) :
 		tag_propre = "X"
 	return tag_propre
 			
-		 
 
 def print_report(corpus_gold: Corpus, corpus_test: Corpus):
     ref = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
     test = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
     print(classification_report(ref, test))
+
+def matrix(corpus_gold: Corpus, corpus_test: Corpus):
+    ref = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
+    test = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
+    labels = sorted(set(ref + test))  
+    cm = confusion_matrix(ref, test, labels=labels)
+    
+    # Plot the confusion matrix
+    cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
+    cm_display.plot(cmap=plt.cm.PuRd, values_format=".2f") 
+    plt.show()  # Display the plot
+
+    return cm_display
 
 def main():
     lst_cat_train, corpus_train = read_conll("../corpus-lfg/pl_lfg-ud-train.conllu")
@@ -236,6 +249,8 @@ def main():
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
     print_report(corpus_gold, corpus_test_treeTagger)
+
+    matrix(corpus_gold, corpus_test)
 
 
 if __name__ == "__main__":

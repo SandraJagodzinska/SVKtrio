@@ -204,13 +204,13 @@ def dico_étiquettes_treeTagger(tag_complexe) :
 			
 
 def print_report(corpus_gold: Corpus, corpus_test: Corpus):
-    ref = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
-    test = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
+    test = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
+    ref = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
     print(classification_report(ref, test))
 
 def matrix(corpus_gold: Corpus, corpus_test: Corpus, model_name):
-    ref = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
-    test = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
+    test = [tok.tag for sent in corpus_test.sentences for tok in sent.tokens]
+    ref = [tok.tag for sent in corpus_gold.sentences for tok in sent.tokens]
     labels = sorted(set(ref + test))  
     cm = confusion_matrix(ref, test, labels=labels)
     

@@ -244,6 +244,7 @@ def main():
     corpus_test_treeTagger = annotation_treetagger_to_corpus(corpus_gold, "../train-treetagger/annotation_treeTagger_original.txt", True)
     print("TREE-TAGGER RESULTS ORIGINAL")
     model_name = "Tree-Tagger-polonais"
+    matrix(corpus_gold, corpus_test_treeTagger, model_name)
     for subcorpus in lst_cat_gold:
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger, subcorpus))
@@ -251,6 +252,7 @@ def main():
     
     print("TREE-TAGGER RESULTS ENTRAINE")
     model_name = "Tree-Tagger-polonais-entrainé"
+    matrix(corpus_gold, corpus_test_treeTagger_notre, model_name)
     for subcorpus in lst_cat_gold:
         print(subcorpus)
         print(compute_accuracy(corpus_gold, corpus_test_treeTagger_notre, subcorpus))

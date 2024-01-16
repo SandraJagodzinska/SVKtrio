@@ -93,7 +93,7 @@ Récupérer le texte de test depuis pl_lfg-ud --> on s'est trompé, le fichier n
 **Altérnative :** récupérer la tokenization de spacy afin d'éviter les potentielles incohérences.
 PS : le but n'est pas l'évaluation des tokens.
 
-`bin/tree-tagger train-treetagger/model-name train-treetagger/text4TT.txt train-treetagger/text4TTv.txt -token`
+`bin/tree-tagger train-treetagger/model-name train-treetagger/text4TT.txt train-treetagger/annotation_treetagger.txt -token`
 
 ## Évaluation
 

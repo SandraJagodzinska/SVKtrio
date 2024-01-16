@@ -236,3 +236,12 @@ weighted avg       0.96      0.96      0.96     13112
 
 ## Matrices de confusion
 
+### pl_core_news_sm
+![Matrice pl_core_news_sm](projet-final/train-treetagger/gold_vs_pl_sm.png "Matrice pl_core_news_sm")
+
+### pl_core_news_md
+![Matrice pl_core_news_md](projet-final/train-treetagger/gold_vs_pl_md.png "Matrice pl_core_news_md")
+
+### pl_core_news_lg
+![Matrice pl_core_news_lg](projet-final/train-treetagger/gold_vs_pl_lg.png "Matrice pl_core_news_lg")
+

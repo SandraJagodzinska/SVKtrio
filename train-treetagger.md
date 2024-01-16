@@ -97,3 +97,9 @@ PS : le but n'est pas l'évaluation des tokens.
 ## Évaluation
 
 ## Matrices de confusion
+### Tree-Tagger-polonais
+![Matrice Tree-Tagger-polonais](projet-final/train-treetagger/tt_pl_original.png "Matrice Tree-Tagger-polonais")
+
+### Tree-Tagger-polonais-entrainé
+![Matrice Tree-Tagger-polonais-entrainé](projet-final/train-treetagger/tt_pl_entraine.png "Matrice Tree-Tagger-polonais-entrainé")
+

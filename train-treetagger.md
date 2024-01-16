@@ -1,6 +1,9 @@
 # Re-entrainement de Treetagger - (travail en groupe)
 
-/!\ Se positionner dans le répértoire parent du projet /!\
+Pour se faire, nous avons suivie le guide su git : `https://gite.lirmm.fr/advanse/sentiment-analysis-webpage/-/tree/master/resources_on_server/TreeTagger` 
+
+
+**/!\ Se positionner dans le répértoire parent du projet /!\**
 
 ## Corpus Polonais (même que spacy)
 
@@ -32,7 +35,7 @@ dictionnaire : {
 	La \t a \t PRON \t la \t DET
 ```
 
-### Fichier 3 : 
+### Fichier 3 : annotated.txt
 
 Extraite tous les tokens du corpus avec leurs étiquettes :
 

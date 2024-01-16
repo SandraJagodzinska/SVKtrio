@@ -11,11 +11,13 @@ Corpus conllu pl-lfg_ud (train, dev et test)
 
 ## Installation de treetagger
 
+`https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/`
+
 ## Entrainement
 
 Pour entrainer treetagger nous avons besoin de trois fichiers
 
-### Fichier 1 : lexicon
+### Fichier 1 : lexicon.txt
 
 Construire un lexicon (mots formes + tag)
 
@@ -47,7 +49,7 @@ Extraite tous les tokens du corpus avec leurs étiquettes :
 
 ## Entrainement
 
-Lancement de l'entrainement avec la commande : `./train-tree-tagger -st PUNCT ../train-treetagger/lexicon.tsv ../train-treetagger/tags.txt ../train-treetagger/annotated.txt ../train-treetagger/model`
+Lancement de l'entrainement avec la commande : `bin/train-tree-tagger -st PUNCT train-treetagger/lexicon.txt train-treetagger/tags.txt train-treetagger/annotated.txt train-treetagger/model`
 
 (-st PUNCT' permet d'unifier avec spacy)
 
@@ -86,13 +88,12 @@ D'Arc	subst:sg:nom:f	<unknown>
 Calculer la F-mesure au lieu de l'accuracy
 
 ## Test
-
 Récupérer le texte de test depuis pl_lfg-ud --> on s'est trompé, le fichier ne devait pas être un bloc de texte mais de tokens (1 par ligne).
 
-**Altérnative :** récupérer la tokenization de spacy àfin d'éviter les potentielles incohérences.
+**Altérnative :** récupérer la tokenization de spacy afin d'éviter les potentielles incohérences.
 PS : le but n'est pas l'évaluation des tokens.
 
-`tree-tagger train-treetagger/model_name text4TT.txt text4TTv.txt -token`
+`bin/tree-tagger train-treetagger/model-name train-treetagger/text4TT.txt train-treetagger/text4TTv.txt -token`
 
 ## Évaluation
 

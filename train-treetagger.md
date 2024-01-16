@@ -3,7 +3,7 @@
 Pour se faire, nous avons suivie le guide su git : `https://gite.lirmm.fr/advanse/sentiment-analysis-webpage/-/tree/master/resources_on_server/TreeTagger` 
 
 
-**/!\ Se positionner dans le répértoire parent du projet /!\**
+/!\ Se positionner dans le répértoire parent du projet /!\
 
 ## Corpus Polonais (même que spacy)
 

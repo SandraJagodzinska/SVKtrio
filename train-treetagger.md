@@ -1,6 +1,6 @@
 # Re-entrainement de Treetagger - (travail en groupe)
 
-Pour se faire, nous avons suivie le guide su git : `https://gite.lirmm.fr/advanse/sentiment-analysis-webpage/-/tree/master/resources_on_server/TreeTagger` 
+Pour se faire, nous avons suivie le guide du git : `https://gite.lirmm.fr/advanse/sentiment-analysis-webpage/-/tree/master/resources_on_server/TreeTagger` 
 
 
 /!\ Se positionner dans le répértoire parent du projet /!\
@@ -19,14 +19,22 @@ Pour entrainer treetagger nous avons besoin de trois fichiers
 
 ### Fichier 1 : lexicon.txt
 
-Construire un lexicon (mots formes + tag)
+Construire un lexicon (mots formes	TAG lemma)
 
 ```python
 dictionnaire : {
-            "Token1" : [("Token", TAG)("Token",TAG)],
-			"Token2" : [("Token2", TAG),("Token2",TAG)],
+            "Token1" : [(lemma, TAG1),(lemma, TAG2)],
+			"Token2" : [(lemma, TAG1),(lemma, TAG2)],
             ...
             }
+```
+et ensuite 
+
+```python
+że	SCONJ że PART że
+taki	DET taki
+układ	NOUN układ
+to	AUX to VERB to PRON to DET ten
 ```
 
 ### Fichier 2 : tags.txt
@@ -34,7 +42,7 @@ dictionnaire : {
 À partir d'un des corpus UD récupére tous les tags :
 
 ```python
-	La \t a \t PRON \t la \t DET
+	ADJ PROPN VERB NOUN...
 ```
 
 ### Fichier 3 : annotated.txt
@@ -54,6 +62,23 @@ Lancement de l'entrainement avec la commande : `bin/train-tree-tagger -st PUNCT 
 (-st PUNCT' permet d'unifier avec spacy)
 
 ### Résultats
+
+#### TreeTagger entraîné par nous
+
+```python
+569	NUM
+lat	NOUN
+temu	ADP
+spalono	VERB
+na	ADP
+stosie	NOUN
+Joannę	PROPN
+D'Arc	PROPN
+.	PUNCT
+6	NUM
+```
+
+#### TreeTagger pré-entraîné
 
 ```python
 569	    dig	            569
@@ -85,13 +110,13 @@ D'Arc	subst:sg:nom:f	<unknown>
 
 ### Solutions
 
-Calculer la F-mesure au lieu de l'accuracy
+Reprendre la tokenisation de corpus.
 
 ## Test
 Récupérer le texte de test depuis pl_lfg-ud --> on s'est trompé, le fichier ne devait pas être un bloc de texte mais de tokens (1 par ligne).
 
-**Altérnative :** récupérer la tokenization de spacy afin d'éviter les potentielles incohérences.
-PS : le but n'est pas l'évaluation des tokens.
+**Altérnative :** récupérer la tokenization de corpus afin d'éviter les potentielles incohérences.
+PS : le but n'est pas l'évaluation de tokenisation.
 
 `bin/tree-tagger train-treetagger/model-name train-treetagger/text4TT.txt train-treetagger/annotation_treetagger.txt -token`
 
